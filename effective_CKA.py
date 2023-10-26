@@ -1,6 +1,12 @@
 # coding=utf-8
+import logging
+import sys
+
 import tensorflow.compat.v2 as tf
 tf.enable_v2_behavior()
+
+
+
 
 class MinibatchCKA(tf.keras.metrics.Metric):
 
@@ -83,9 +89,11 @@ class MinibatchCKA(tf.keras.metrics.Metric):
       mean_hsic /= normalization1[:, None]
       mean_hsic /= normalization2[None, :]
     else:
-      normalization = tf.sqrt(tf.linalg.diag_part(mean_hsic))
-      mean_hsic /= normalization[:, None]
-      mean_hsic /= normalization[None, :]
+      normalization = tf.sqrt(tf.linalg.diag_part(mean_hsic)) # mean_hsic HISC(K,L)
+      logging.info("mean_hsic:{}".format(mean_hsic))
+      logging.info("normalization:{}".format(normalization))
+      mean_hsic /= normalization[:, None] # HISC(K,K)
+      mean_hsic /= normalization[None, :] # HISC(L,L)
     return mean_hsic
 
 

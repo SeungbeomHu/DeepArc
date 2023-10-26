@@ -25,7 +25,7 @@ print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('
 
 FLAGS = flags.FLAGS
 flags.DEFINE_integer('cka_batch', 256, 'Batch size used to approximate CKA')
-flags.DEFINE_integer('cka_iter', 10,
+flags.DEFINE_integer('cka_iter', 5,
                      'Number of iterations to run minibatch CKA approximation')
 
 flags.DEFINE_string('experiment_dir', None,
@@ -33,7 +33,6 @@ flags.DEFINE_string('experiment_dir', None,
 
 
 def normalize_activations(act):
-
   act = act.reshape(act.shape[0], -1)
   act_norm = np.linalg.norm(act, axis=1)
   act /= act_norm[:, None]
@@ -69,7 +68,7 @@ def compute_cka_internal(model_dir,
                          dataset_name='cifar10',
                          use_batch=True,
                          use_train_mode=False,
-                         normalize_act=False):
+                         normalize_act=True):
   if dataset_name == 'cifar10':
     if use_train_mode:
       filename = 'cka_within_model_%d_bn_train_mode.pkl' % FLAGS.cka_batch
@@ -101,7 +100,7 @@ def compute_cka_internal(model_dir,
           shuffle=True,
           dataset_name=dataset_name,
           targets=FLAGS.targets,
-          n_data=10000)
+          n_data=100)
       for images, _ in dataset:
         cka.update_state(get_activations(images, model, normalize_act))
   else:
@@ -109,14 +108,10 @@ def compute_cka_internal(model_dir,
         FLAGS.cka_batch, data_path=data_path, dataset_name=dataset_name)
     all_images = tf.concat([x[0] for x in dataset], 0)
     cka.update_state(get_activations(all_images, model))
+
   heatmap = cka.result().numpy()
-  logging.info(out_dir)
   with tf.io.gfile.GFile(out_dir, 'wb') as f:
     pickle.dump(heatmap, f)
-
-
-
-
 
 
 def main(argv):

@@ -13,10 +13,6 @@ import time
 #     return 5
 
 
-def shell(order):
-    time.sleep(3) 
-    os.system(order)
-
 #divs = [10,25,50,75,100] #100 10
 divs = [50] #100 10
 
@@ -32,7 +28,7 @@ for seed in range(8,11):
     for div in divs:
         for target in targets:
             for deep,gpu in zip(deeps,gpus):
-                dir = 'cifar-depth-{}-width-1-bs-128-lr-0.010000-reg-0.005000-div-{}-targets-{}-copy-{}/weights.300.ckpt'.format(deep,div,target,seed)
+                dir = 'train/resnet56'.format(deep,div,target,seed)
                 # g = find_gpu(gpu)
                 # while g==5:
                 #     print('--------------------------------------')

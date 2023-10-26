@@ -9,6 +9,7 @@ import os
 import numpy as np
 from numpy.random import randint
 
+from keras.datasets import cifar10
 
 import tensorflow as tf
 import tensorflow_datasets as tfds
@@ -138,6 +139,7 @@ def load_train_data(batch_size,
   train_dataset = train_dataset.batch(batch_size, drop_remainder=True)
   train_dataset = train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
+  print(len(train_dataset))
 
   return train_dataset
 
